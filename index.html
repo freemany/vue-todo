@@ -1,0 +1,191 @@
+<!doctype html>
+<html>
+<head>
+  <title>Simple Todo App</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .done {
+      text-decoration: line-through;
+    }
+    .newly {
+      background: #99cb84;
+    }
+  </style>
+</head>
+<body>
+  <div class="container text-center">
+    <ul class="list-group">
+      <todo-item v-for="(item, index) in sortedItems" :item="item" :key="index"></todo-item>
+    </ul>
+    <div class="form-inline pull-left clearfix">
+      <label class="sr-only" for="inlineFormInputName2">Title</label>
+      <input type="text" class="form-control mb-2 mr-sm-2" id="inlineFormInputName2" placeholder="todo" v-model="newTitle" >
+
+      <button type="submit" class="btn btn-primary mb-2" @click="addItem()">Add</button>
+    </div>
+    <pre>{{$data}}</pre>
+  </div>
+
+  <!-- templates -->
+  <template id="todo-item">
+    <li v-bind:class="{'list-group-item': true, clearfix: true, newly: item.new}">
+      <span v-if="!item.editing" v-bind:class="{'pull-left': true, done: item.done}" class="pull-left">{{ item.title }}</span>
+      <span v-if="item.editing"><input type="text" class="form-control" v-model="item.title">
+        <div class="btn-group pull right">
+          <button @click="saveItem(item)" class="btn btn-primary">Save</button>
+          <button @click="cancelItem(item)" class="btn btn-info">Cancel</button>
+        </div></span>
+      <div class="btn-group pull-right">
+        <button @click="completeItem(item)" class="btn btn-primary">{{item.done ? 'Undone' : 'Done'}}</button>
+        <button @click="editItem(item)" class="btn btn-default">Edit</button>
+        <button @click="deleteItem(item)" class="btn btn-danger">Delete</button>
+      </div>
+    </li>
+  </template>
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/3.0.1/vue-router.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/0.7.0/vue-resource.js"></script>
+<script type="text/javascript">
+  /* local libary here */
+class Store {
+    constructor() {
+    }
+
+    getItem(key) {
+        const data=localStorage.getItem(key);
+        if (null === data) {
+            return null;
+        }
+        return JSON.parse(data);
+    }
+
+    setItem(key, data) {
+        return localStorage.setItem(key, JSON.stringify(data));
+    }
+}
+
+class Utils {
+    static flash(el) {
+        $(el).addClass('newly');
+        setTimeout(function() {
+            $(el).removeClass('newly');
+        }, 1000);
+    }
+    static guid() {
+        function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000)
+                .toString(16)
+                .substring(1);
+        }
+        return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+    }
+}
+/* end of local library */
+
+const storageKey = '_todo_db_';
+const bus = new Vue();
+
+Vue.component('todo-item', {
+  template: '#todo-item',
+  props: ['item'],
+  mounted: function() {
+      // console.log(this.item);
+  },
+  created: function() {
+      // console.log(this.item);
+  },
+  data: function() {
+      return {
+          cachedTitle: null
+      }
+    },
+  methods: {
+      completeItem: function(item) {
+          item.done = !item.done;
+          bus.$emit('item:save');
+      },
+      deleteItem: function(item) {
+          if (confirm('Do you want to delete this item?')) {
+              const index = this.$parent.items.indexOf(item);
+              this.$parent.items.splice(index, 1);
+              bus.$emit('item:save');
+          }
+      },
+      editItem: function(item) {
+          item.editing = true;
+          this.cachedTitle = item.title;
+      },
+      saveItem: function(item) {
+          item.editing = false;
+          this.cachedTitle = null;
+          bus.$emit('item:save'); console.log('save')
+      },
+      cancelItem: function(item) {
+          item.title = this.cachedTitle;
+          item.editing = false;
+      }
+  },
+  computed: {
+  }
+});
+
+new Vue({
+  el: '.container',
+  props: {
+      story$: null,
+      store: null,
+  },
+  created: function() {
+      const store = new Store();
+      const items = store.getItem(storageKey);
+      if (items !== null) {
+          this.items = items;
+      }
+      const that = this;
+      bus.$on('item:save', function() {
+          store.setItem(storageKey, that.items);
+      });
+      Utils.flash(null);
+  },
+  data: {
+    items: [
+        {title: 'freeman', done: false, editing: false, id: Utils.guid(), new: false},
+        {title: 'tia', done: false, editing: false, id: Utils.guid(), new: false},
+    ],
+    newTitle: '',
+  },
+  methods: {
+      addItem: function() {
+          let item = {
+              title: '',
+              editing: false,
+              done: false,
+              id: Utils.guid(),
+              new: true,
+          }
+          item.title = this.newTitle;
+          this.newTitle = '';
+          this.items.push(item);
+          // remove style from the newly added item
+          setTimeout(() => {
+              item.new = false;
+              bus.$emit('item:save');
+          }, 800);
+      }
+  },
+  computed: {
+      sortedItems: function() {
+          const sorted = this.items.sort(function(a, b) {
+              return a.title > b.title;
+          });
+
+          return this.items;
+      }
+  }
+})
+</script>
+</html>
