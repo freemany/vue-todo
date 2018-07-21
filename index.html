@@ -25,7 +25,6 @@
 
       <button type="submit" class="btn btn-primary mb-2" @click="addItem()">Add</button>
     </div>
-    <pre>{{$data}}</pre>
   </div>
 
   <!-- templates -->
@@ -69,12 +68,6 @@ class Store {
 }
 
 class Utils {
-    static flash(el) {
-        $(el).addClass('newly');
-        setTimeout(function() {
-            $(el).removeClass('newly');
-        }, 1000);
-    }
     static guid() {
         function s4() {
             return Math.floor((1 + Math.random()) * 0x10000)
@@ -149,7 +142,6 @@ new Vue({
       bus.$on('item:save', function() {
           store.setItem(storageKey, that.items);
       });
-      Utils.flash(null);
   },
   data: {
     items: [
