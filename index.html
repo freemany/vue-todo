@@ -16,7 +16,7 @@
 </head>
 <body>
 <div class="container text-center">
-  <router-view :items="items"></router-view>
+
   <ul class="list-group">
     <todo-item v-for="(item, index) in sortedItems" :item="item" :key="index"></todo-item>
   </ul>
@@ -40,18 +40,24 @@
 <template id="todo-item">
   <li v-bind:class="{'list-group-item': true, clearfix: true, newly: item.new}">
     <span v-if="!item.editing" v-bind:class="{'pull-left': true, done: item.done}" class="pull-left">{{ item.title }}</span>
-    <span v-if="item.editing">
-        <input type="text" class="form-control" v-model="item.title" @click="select">
-        <div class="btn-group pull right">
-          <button @click="saveItem(item)" class="btn btn-primary">Save</button>
-          <button @click="cancelItem(item)" class="btn btn-info">Cancel</button>
-        </div></span>
+    <router-view :item="item"></router-view>
     <div class="btn-group pull-right">
       <button @click="completeItem(item)" class="btn btn-primary">{{item.done ? 'Undone' : 'Done'}}</button>
       <button @click="editItem(item)" class="btn btn-default">Edit</button>
       <button @click="deleteItem(item)" class="btn btn-danger">Delete</button>
     </div>
   </li>
+</template>
+<template id="todo-edit-item">
+  <span>
+    <span v-if="item.editing">
+        <input type="text" class="form-control" v-model="item.title" @click="select">
+        <div class="btn-group pull right">
+          <button @click="saveItem(item)" class="btn btn-primary">Save</button>
+          <button @click="cancelItem(item)" class="btn btn-info">Cancel</button>
+        </div>
+    </span>
+  </span>
 </template>
 </body>
 
@@ -95,12 +101,6 @@
     Vue.component('todo-item', {
         template: '#todo-item',
         props: ['item'],
-        mounted: function() {
-            // console.log(this.item);
-        },
-        created: function() {
-            // console.log(this.item);
-        },
         data: function() {
             return {
                 cachedTitle: null
@@ -119,44 +119,52 @@
                 }
             },
             editItem: function(item) {
-                item.editing = true;
-                this.cachedTitle = item.title;
+                // item.editing = true;
+                // this.cachedTitle = item.title;
                 const id = item.id;
                 this.$router.push({path: `/edit/${id}`});
             },
+        },
+    });
+
+    const EditComponent = {
+        props: ['item'],
+        data: function() {
+            return {
+                cachedTitle: '',
+            }
+        },
+        template: '#todo-edit-item',
+        mounted: function() {
+            this.cachedTitle = this.item.title;
+            if (this.item.editing === true) {
+                return;
+            }
+            const id = this.$route.params.id;
+            if (id === this.item.id) {
+                this.item.editing = true;
+            }
+        },
+        methods: {
             saveItem: function(item) {
                 item.editing = false;
                 this.cachedTitle = null;
-                bus.$emit('item:save'); console.log('save')
+                bus.$emit('item:save');
+                this.goHome();
             },
             cancelItem: function(item) {
                 item.title = this.cachedTitle;
                 item.editing = false;
+                this.goHome();
             },
             select: function(e) {
                 e.target.select();
+            },
+            goHome() {
+                this.$router.push({path: '/'});
             }
         },
-        computed: {
-        }
-    });
-
-    const EditComponent = {
-        props: ['items'],
-        template: '<h5 v-if="title">I am editing "{{title}}"</h5>',
-        computed: {
-            title: function() {
-                if (undefined === this.$route.params.id) {
-                    return null;
-                }
-                const item = this.items.filter((x) => {
-                    return x.id === this.$route.params.id;
-                });
-
-                return item[0].title;
-            }
-        }
-    }
+    };
 
     // 2. Define some routes
     // Each route should map to a component. The "component" can
@@ -165,7 +173,7 @@
     // We'll talk about nested routes later.
     const routes = [
         { path: '/edit/:id', component: EditComponent}
-    ]
+    ];
 
     // Create the router instance and pass the `routes` option
     // You can pass in additional options here, but let's
