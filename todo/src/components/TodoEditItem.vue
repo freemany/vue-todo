@@ -1,13 +1,13 @@
 <template>
-    <span>
-    <span v-if="item.editing">
+<div class="row" v-if="item.editing">
+    <div class="col-lg-2 half-width pull-left">
         <input type="text" class="form-control" v-model="item.title" @click="select">
-        <div class="btn-group pull right">
-          <button @click="saveItem(item)" class="btn btn-primary">Save</button>
-          <button @click="cancelItem(item)" class="btn btn-info">Cancel</button>
-        </div>
-    </span>
-  </span>
+    </div> 
+    <div class="btn-group pull-left">
+        <button @click="saveItem(item)" class="btn btn-primary">Save</button>
+        <button @click="cancelItem(item)" class="btn btn-info">Cancel</button>
+    </div>
+</div>
 </template>
 
 <script>
@@ -55,5 +55,5 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+.half-width { width: 50%}
 </style>
