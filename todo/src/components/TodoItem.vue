@@ -21,7 +21,7 @@ export default {
                 cachedTitle: null
             }
         },
-        methods: {
+  methods: {
             completeItem: function(item) {
                 item.done = !item.done;
                 EventBus.$emit('item:save');

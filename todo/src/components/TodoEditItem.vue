@@ -21,7 +21,6 @@ export default {
                 cachedTitle: '',
             }
         },
-        template: '#todo-edit-item',
         mounted: function() {
             this.cachedTitle = this.item.title;
             if (this.item.editing === true) {
