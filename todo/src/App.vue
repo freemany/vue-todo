@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" class="container">
       <ul class="list-group">
         <TodoItem v-for="(item, index) in sortedItems" :item="item" :key="index"></TodoItem>
       </ul>
