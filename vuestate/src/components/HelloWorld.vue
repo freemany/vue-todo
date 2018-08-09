@@ -8,6 +8,7 @@
       <ul>
         <li v-for="(link, index) in links" v-bind:key="index">
           {{ link }}
+          <button v-on:click="removeLinks(index)" class="rm">Remove</button>
         </li>
       </ul>
     </div>
@@ -19,7 +20,7 @@
 
 <script>
 import Stats from '@/components/Stats.vue'
-import { mapState, mapMutations } from 'vuex'  // Add mapMutations
+import { mapState, mapMutations, mapActions } from 'vuex'  // Add mapMutations
 
 export default {
   name: 'HelloWorld',
@@ -42,9 +43,15 @@ export default {
        ...mapMutations([
       'ADD_LINK'
     ]),
+     ...mapActions([                  // Add this
+      'removeLink'
+    ]),
       addLink: function() {
       this.ADD_LINK(this.newLink)
       this.newLink = ''
+    },
+    removeLinks: function(link) {    // Add this
+      this.removeLink(link)
     }
   }
 }
@@ -87,5 +94,15 @@ export default {
   .right {
     grid-area: right;
     background-color: #E9E9E9;
+  }
+    .rm {
+    float: right;
+    text-transform: uppercase;
+    font-size: .8em;
+    background: #f9d0e3;
+    border: none;
+    padding: 5px;
+    color: #ff0076;
+    cursor:pointer;
   }
 </style>
