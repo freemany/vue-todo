@@ -1,5 +1,6 @@
 import Router from 'vue-router'
 const Wrapper = () => import('@/Wrapper')
+const Wrapper1 = () => import('@/Wrapper1')
 
 export default new Router({
   mode: 'hash', // https://router.vuejs.org/api/#mode
@@ -7,6 +8,7 @@ export default new Router({
   scrollBehavior: () => ({ y: 0 }),
   routes: [
       { path: '/microsite/:id', component: Wrapper }, 
+      { path: '/microsite1', name: "tes", component: Wrapper1 }, 
       { path: '**', component: Wrapper }
     ]
 //   routes: [
