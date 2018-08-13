@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import EventBus from '@/shared/EventBus'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'TotoItem',
@@ -22,22 +22,17 @@ export default {
             }
         },
   methods: {
-            completeItem: function(item) {
-                item.done = !item.done;
-                EventBus.$emit('item:save');
-            },
+            ...mapActions([                  
+                'removeItem',
+                'completeItem',
+            ]),
             deleteItem: function(item) {
                 if (confirm('Do you want to delete this item?')) {
-                    const index = this.$parent.items.indexOf(item);
-                    this.$parent.items.splice(index, 1);
-                    EventBus.$emit('item:save');
+                    this.removeItem(item)
                 }
             },
             editItem: function(item) {
-                // item.editing = true;
-                // this.cachedTitle = item.title;
-                const id = item.id;
-                this.$router.push({path: `/edit/${id}`});
+                this.$router.push({path: `/edit/${item.id}`});
             },
         }
 }

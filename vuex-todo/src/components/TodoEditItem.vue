@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import EventBus from '@/shared/EventBus'
+import { mapMutations } from 'vuex'
 
 export default {
   name: 'TotoEditItem',
@@ -32,10 +32,13 @@ export default {
             }
         },
         methods: {
+                  ...mapMutations([
+                   'SAVE_ITEMS'
+            ]),
             saveItem: function(item) {
                 item.editing = false;
                 this.cachedTitle = null;
-                EventBus.$emit('item:save');
+                this.SAVE_ITEMS();
                 this.goHome();
             },
             cancelItem: function(item) {

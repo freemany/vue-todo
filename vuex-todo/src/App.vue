@@ -6,7 +6,7 @@
       <div class="form-inline pull-left clearfix">
         <label class="sr-only" for="inlineFormInputName2">Title</label>
         <input type="text" class="form-control mb-2 mr-sm-2" id="inlineFormInputName2" placeholder="todo" v-model="newTitle">
-        <button type="submit" class="btn btn-primary mb-2" @click="addItem()">Add</button>
+        <button type="submit" class="btn btn-primary mb-2" @click="createItem()">Add</button>
       </div>
   </div>
 </template>
@@ -15,61 +15,39 @@
 import TodoItem from '@/components/TodoItem'
 import Utils from '@/lib/Utils'
 import Store from '@/lib/Store'
-import EventBus from '@/shared/EventBus'
 import Config from '@/shared/config'
-import { mapState } from 'vuex'
+import { mapState, mapGetters, mapActions, mapMutations } from 'vuex'
 
 export default {
   name: 'app',
   components: {
     TodoItem
   },
+  data() {
+    return {
+        newTitle: ''
+    }
+  },
   props: {
             story$: null,
             store: null,
   },
         created: function() { 
-            const store = new Store();
-            const items = store.getItem(Config.storageKey);
-            if (items !== null) {
-                this.items = items;
-            }
-            const that = this;
-            EventBus.$on('item:save', function() {
-                store.setItem(Config.storageKey, that.items);
-            });
-            this.$store.commit('SET_ITEMS', items)
+            this.LOAD_ITEMS();
         },
         methods: {
-            addItem: function() {
-                let item = {
-                    title: '',
-                    editing: false,
-                    done: false,
-                    id: Utils.guid(),
-                    new: true,
-                }
-                item.title = this.newTitle;
-                this.newTitle = '';
-                this.items.push(item);
-                // remove style from the newly added item
-                setTimeout(() => {
-                    item.new = false;
-                    EventBus.$emit('item:save');
-                }, 800);
+            ...mapMutations([
+                'LOAD_ITEMS'
+            ]),
+            ...mapActions([                  
+                'addItem'
+            ]),
+            createItem() {
+              this.addItem(this.newTitle)
+              this.newTitle = '';
             }
         },
         computed: {
-            sortedItems: function() {
-                this.items.sort(function(a, b) {
-                    if (a.editing || b.editing) {
-                        return 0;
-                    }
-                    return a.title > b.title;
-                });
-
-                return this.items;
-            },
             items: {
               set: function() {
                   return {...mapState([
@@ -80,9 +58,9 @@ export default {
                   return this.$store.state.items
               }
             },
-            ...mapState([
-                'newTitle'
-            ])
+            ...mapGetters([
+                'sortedItems'
+            ]),
         }
 }
 </script>
