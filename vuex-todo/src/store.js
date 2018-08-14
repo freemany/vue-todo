@@ -39,22 +39,8 @@ export default new Vuex.Store({
     SAVE_ITEMS(state) {
       Store.setItem(Config.storageKey, state.items);
     },
-    ADD_ITEM: (state, title) => {  
-        let item = {
-            title: '',
-            editing: false,
-            done: false,
-            id: Utils.guid(),
-            new: true,
-        }
-        item.title = title
-        state.newTitle = ''
+    ADD_ITEM: (state, item) => {  
         state.items.push(item)
-        // remove style from the newly added item
-        setTimeout(() => { 
-            item.new = false;
-            Store.setItem(Config.storageKey, state.items);
-        }, 800);
     },
     REMOVE_ITEM: (state, item) => {       
       state.items.splice(item, 1)
@@ -69,11 +55,27 @@ export default new Vuex.Store({
     removeItem: (context, item) => {       
       context.commit('REMOVE_ITEM', item)
     },
-    addItem: (context, title) => {       
-      context.commit('ADD_ITEM', title)
+    addItem: (context, title) => {  
+      let item = {
+        title: '',
+        editing: false,
+        done: false,
+        id: Utils.guid(),
+        new: true,
+     }
+     item.title = title     
+     context.commit('ADD_ITEM', item)
+      // remove style from the newly added item
+      setTimeout(() => { 
+          item.new = false;
+          context.commit('SAVE_ITEMS')
+      }, 800);
     },
     completeItem: (context, title) => {       
       context.commit('COMPLETE_ITEM', title)
     },
+    loadItems: (context, items) => {
+
+    }
   }
 })
