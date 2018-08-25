@@ -49,6 +49,11 @@ export default new Vuex.Store({
     COMPLETE_ITEM: (state, item) => {
       item.done = !item.done;
       Store.setItem(Config.storageKey, state.items);
+    },
+    removeById: (state, id) => {
+      const item = state.items.filter(item => item.id === id);
+      state.items.splice(item, 1)
+      Store.setItem(Config.storageKey, state.items);
     }
   },
   actions: {
@@ -70,6 +75,8 @@ export default new Vuex.Store({
           item.new = false;
           context.commit('SAVE_ITEMS')
       }, 800);
+
+      return item;
     },
     completeItem: (context, title) => {       
       context.commit('COMPLETE_ITEM', title)

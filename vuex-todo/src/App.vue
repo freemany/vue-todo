@@ -34,16 +34,26 @@ export default {
   },
         created: function() { 
             this.LOAD_ITEMS();
+            if (undefined !== typeof EventManager) {
+                EventManager.on('stats:todo:item_remove', (id) => {
+                   this.removeById(id);
+                });
+            }
         },
         methods: {
             ...mapMutations([
-                'LOAD_ITEMS'
+                'LOAD_ITEMS', 'removeById'
             ]),
             ...mapActions([                  
                 'addItem'
             ]),
             createItem() {
-              this.addItem(this.newTitle)
+              const pItem = this.addItem(this.newTitle)
+              pItem.then((item) => {
+                   if (undefined !== typeof EventManager) {
+                      EventManager.trigger('stats:todo:item_add', [item]);
+                   }
+              })
               this.newTitle = '';
             }
         },

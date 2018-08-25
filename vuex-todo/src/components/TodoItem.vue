@@ -12,6 +12,7 @@
 
 <script>
 import { mapActions } from 'vuex'
+import { EventEmitter } from 'events';
 
 export default {
   name: 'TotoItem',
@@ -28,7 +29,7 @@ export default {
             ]),
             deleteItem: function(item) {
                 if (confirm('Do you want to delete this item?')) {
-                    this.removeItem(item)
+                    this.removeItem(item);
                 }
             },
             editItem: function(item) {
