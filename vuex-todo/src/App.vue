@@ -17,6 +17,7 @@ import Utils from '@/lib/Utils'
 import Store from '@/lib/Store'
 import Config from '@/shared/config'
 import { mapState, mapGetters, mapActions, mapMutations } from 'vuex'
+import MyEventManager from '@/shared/MyEventManager'
 
 export default {
   name: 'app',
@@ -34,11 +35,9 @@ export default {
   },
         created: function() { 
             this.LOAD_ITEMS();
-            if (undefined !== typeof EventManager) {
-                EventManager.on('stats:todo:item_remove', (id) => {
+            MyEventManager.on('stats:todo:item_remove', (id) => {
                    this.removeById(id);
-                });
-            }
+            });
         },
         methods: {
             ...mapMutations([
@@ -50,9 +49,7 @@ export default {
             createItem() {
               const pItem = this.addItem(this.newTitle)
               pItem.then((item) => {
-                   if (undefined !== typeof EventManager) {
-                      EventManager.trigger('stats:todo:item_add', [item]);
-                   }
+                MyEventManager.trigger('stats:todo:item_add', [item]);
               })
               this.newTitle = '';
             }

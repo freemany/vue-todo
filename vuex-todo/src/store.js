@@ -42,8 +42,10 @@ export default new Vuex.Store({
     ADD_ITEM: (state, item) => {  
         state.items.push(item)
     },
-    REMOVE_ITEM: (state, item) => {       
-      state.items.splice(item, 1)
+    REMOVE_ITEM: (state, item) => {   
+      // get index of object with id:37
+      const removeIndex = state.items.map(i => i.id).indexOf(item.id);
+      state.items.splice(removeIndex, 1)
       Store.setItem(Config.storageKey, state.items);
     },
     COMPLETE_ITEM: (state, item) => {
