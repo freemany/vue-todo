@@ -53,8 +53,8 @@ export default new Vuex.Store({
       Store.setItem(Config.storageKey, state.items);
     },
     removeById: (state, id) => {
-      const item = state.items.filter(item => item.id === id);
-      state.items.splice(item, 1)
+      const removeIndex = state.items.map(i => i.id).indexOf(id);
+      state.items.splice(removeIndex, 1)
       Store.setItem(Config.storageKey, state.items);
     }
   },
