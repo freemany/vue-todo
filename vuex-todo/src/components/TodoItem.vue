@@ -1,7 +1,7 @@
 <template>
     <li v-bind:class="{'list-group-item': true, clearfix: true, newly: item.new}">
     <span v-if="!item.editing" v-bind:class="{'pull-left': true, done: item.done}" class="pull-left">{{ item.title }}</span>
-    <router-view :item="item"></router-view>
+    <router-view :item="item" @stopedit="stopEdit"></router-view>
     <div class="btn-group pull-right">
       <button @click="completeItem(item)" class="btn btn-primary">{{item.done ? 'Undone' : 'Done'}}</button>
       <button @click="editItem(item)" class="btn btn-default">Edit</button>
@@ -15,7 +15,7 @@ import { mapActions } from 'vuex'
 import { EventEmitter } from 'events';
 
 export default {
-  name: 'TotoItem',
+  name: 'TodoItem',
   props: ['item'],
   data: function() {
             return {
@@ -33,8 +33,12 @@ export default {
                 }
             },
             editItem: function(item) {
-                this.$router.push({path: `/edit/${item.id}`});
+                // this.$router.push({path: `/edit/${item.id}`});
+                location.hash = '/edit/' + item.id;
             },
+            stopEdit() {
+                this.item.editing = false;
+            }
         }
 }
 </script>

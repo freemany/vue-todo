@@ -2,16 +2,17 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 const TodoEditItem = () => import('@/components/TodoEditItem')
-const EmptyItem = () => import('@/components/EmptyItem')
+const BarEdit = () => import('@/components/BarEdit')
 
 Vue.use(Router)   // very important !!!
 
-export default new Router({
+const r = new Router({
   mode: 'hash', // https://router.vuejs.org/api/#mode
   linkActiveClass: 'open active',
   scrollBehavior: () => ({ y: 0 }),
   routes: [
-    { path: '/edit/:id', component: TodoEditItem },
-    { path: '*', component: EmptyItem}
+    { path: '/bar-edit/:id', component: BarEdit }
   ]
 });
+
+export default r;

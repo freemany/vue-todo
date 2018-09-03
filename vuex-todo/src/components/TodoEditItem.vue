@@ -14,7 +14,7 @@
 import { mapMutations } from 'vuex'
 
 export default {
-  name: 'TotoEditItem',
+  name: 'TodoEditItem',
   props: ['item'],
         data: function() {
             return {
@@ -27,8 +27,11 @@ export default {
                 return;
             }
             const id = this.$route.params.id;
+            console.log(id)
             if (id === this.item.id) {
                 this.item.editing = true;
+            } else {
+                this.item.editing = false;
             }
         },
         methods: {
@@ -50,7 +53,8 @@ export default {
                 e.target.select();
             },
             goHome() {
-                this.$router.push({path: '/'});
+                // this.$router.push({path: '/'});
+                location.hash = '/'
             }
         },
 }

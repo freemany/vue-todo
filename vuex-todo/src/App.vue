@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="container">
+  <div class="container">
       <ul class="list-group">
         <TodoItem v-for="(item, index) in sortedItems" :item="item" :key="index"></TodoItem>
       </ul>
@@ -37,6 +37,8 @@ export default {
             this.LOAD_ITEMS();
             MyEventManager.on('stats:todo:item_remove', (id) => {
                    this.removeById(id);
+
+                   return true;
             });
         },
         methods: {
